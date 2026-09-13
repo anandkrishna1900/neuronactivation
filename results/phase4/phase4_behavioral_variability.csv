@@ -1,0 +1,3 @@
+agent,trajectory_diversity,action_entropy,success_rate,mean_steps
+Connectome Agent,2.614451247462189,1.0327508647179569,0.0,0.0
+Random Baseline,33.42877570807465,1.5849152721834123,20.0,0.0

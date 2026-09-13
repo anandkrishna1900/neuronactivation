@@ -1,0 +1,112 @@
+[
+  {
+    "condition": "A: 180deg + Global Plasticity",
+    "success_mean": 0.0,
+    "success_ci": 0.0,
+    "success_seeds": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_distance": 51.263882972196335,
+    "steps": 400.0,
+    "action_entropy": 0.5140729650947844,
+    "trajectory_diversity": 41.314543500252746
+  },
+  {
+    "condition": "B: 360deg + Global Plasticity",
+    "success_mean": 0.0,
+    "success_ci": 0.0,
+    "success_seeds": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_distance": 51.263882972196335,
+    "steps": 400.0,
+    "action_entropy": 0.6495569831027836,
+    "trajectory_diversity": 41.314543500252746
+  },
+  {
+    "condition": "C: 180deg + Pathway Plasticity",
+    "success_mean": 0.0,
+    "success_ci": 0.0,
+    "success_seeds": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_distance": 51.263882972196335,
+    "steps": 400.0,
+    "action_entropy": 0.538114549474173,
+    "trajectory_diversity": 41.314543500252746
+  },
+  {
+    "condition": "D: 360deg + Pathway Plasticity",
+    "success_mean": 0.0,
+    "success_ci": 0.0,
+    "success_seeds": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_distance": 51.263882972196335,
+    "steps": 400.0,
+    "action_entropy": 0.6695298667359203,
+    "trajectory_diversity": 41.314543500252746
+  },
+  {
+    "condition": "E: 180deg + Saccades + Pathway",
+    "success_mean": 0.0,
+    "success_ci": 0.0,
+    "success_seeds": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_distance": 53.69407434096655,
+    "steps": 400.0,
+    "action_entropy": 0.379444332838369,
+    "trajectory_diversity": 44.20727063961945
+  },
+  {
+    "condition": "F: 360deg + Unplastic",
+    "success_mean": 0.0,
+    "success_ci": 0.0,
+    "success_seeds": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_distance": 51.263882972196335,
+    "steps": 400.0,
+    "action_entropy": 0.6498606534553444,
+    "trajectory_diversity": 41.314543500252746
+  },
+  {
+    "condition": "G: Rewired Null + Pathway",
+    "success_mean": 0.0,
+    "success_ci": 0.0,
+    "success_seeds": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "final_distance": 51.263882972196335,
+    "steps": 400.0,
+    "action_entropy": 0.025211865892934702,
+    "trajectory_diversity": 41.314543500252746
+  },
+  {
+    "condition": "H: Random Baseline",
+    "success_mean": 0.0,
+    "success_ci": 0.0,
+    "success_seeds": [
+      0.0
+    ],
+    "final_distance": 59.911792814141165,
+    "steps": 400.0,
+    "action_entropy": 1.5849473185066356,
+    "trajectory_diversity": 56.90148903019688
+  }
+]

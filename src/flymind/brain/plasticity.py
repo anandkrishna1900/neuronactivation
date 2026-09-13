@@ -1,10 +1,10 @@
 """
-Local biologically inspired plasticity mechanisms with eligibility traces.
+Local biologically inspired plasticity mechanisms with eligibility traces and pathway masking.
 Explicitly avoids global backpropagation in the biological connectome network.
 """
 
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Set, Tuple
 import numpy as np
 
 
@@ -69,7 +69,7 @@ class RewardModulatedHebbian(PlasticityRule):
         post_activity: np.ndarray,
         reward: float = 0.0,
     ) -> np.ndarray:
-        """Apply dopamine/reward modulation to accumulated eligibility traces."""
+        """Apply dopamine/reward modulation strictly masked to designated plastic edges."""
         self.step_eligibility(pre_activity, post_activity)
 
         if abs(reward) < 1e-7:
@@ -77,7 +77,7 @@ class RewardModulatedHebbian(PlasticityRule):
 
         dW = self.learning_rate * reward * self.eligibility_trace
 
-        # Enforce anatomical mask: never create non-existent connections
+        # Enforce anatomical pathway mask: non-mask connections strictly receive 0 update
         if self.plasticity_mask is not None:
             dW = dW * self.plasticity_mask
         else:

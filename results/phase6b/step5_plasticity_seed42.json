@@ -1,0 +1,46 @@
+{
+  "seed": 42,
+  "n_episodes": 200,
+  "checkpoints": {
+    "0": {
+      "mean_score": 0.15,
+      "median_score": 0.0,
+      "max_score": 3,
+      "std_score": 0.4769696007084729,
+      "mean_survival": 144.95,
+      "mean_flap_rate": 0.10167991348931038
+    },
+    "50": {
+      "mean_score": 0.14,
+      "median_score": 0.0,
+      "max_score": 2,
+      "std_score": 0.40049968789001567,
+      "mean_survival": 146.66,
+      "mean_flap_rate": 0.10229081539231265
+    },
+    "100": {
+      "mean_score": 0.24,
+      "median_score": 0.0,
+      "max_score": 3,
+      "std_score": 0.5678027826631356,
+      "mean_survival": 158.15,
+      "mean_flap_rate": 0.10137877188167259
+    },
+    "final": {
+      "mean_score": 0.24,
+      "median_score": 0.0,
+      "max_score": 3,
+      "std_score": 0.6183849933496123,
+      "mean_survival": 164.26,
+      "mean_flap_rate": 0.09174694277894174
+    }
+  },
+  "final_eval": {
+    "mean_score": 0.24,
+    "median_score": 0.0,
+    "max_score": 3,
+    "std_score": 0.6183849933496123,
+    "mean_survival": 164.26,
+    "mean_flap_rate": 0.09174694277894174
+  }
+}

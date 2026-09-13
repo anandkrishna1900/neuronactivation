@@ -1,0 +1,32 @@
+{
+  "random_50pct": {
+    "mean_score": 0.0,
+    "max_score": 0,
+    "mean_survival": 14.538
+  },
+  "random_30pct": {
+    "mean_score": 0.0,
+    "max_score": 0,
+    "mean_survival": 20.526
+  },
+  "fixed_period_8": {
+    "mean_score": 0.0,
+    "max_score": 0,
+    "mean_survival": 42.0
+  },
+  "hand_designed": {
+    "mean_score": 2.354,
+    "max_score": 3,
+    "mean_survival": 425.498
+  },
+  "never_flap": {
+    "mean_score": 0.0,
+    "max_score": 0,
+    "mean_survival": 39.0
+  },
+  "always_flap": {
+    "mean_score": 0.0,
+    "max_score": 0,
+    "mean_survival": 10.0
+  }
+}

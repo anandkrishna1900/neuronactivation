@@ -1,0 +1,14 @@
+{
+  "random": {
+    "timing_std": 1.383161474044189,
+    "mean_entropy": 0.9508957890593359
+  },
+  "fixed_period": {
+    "timing_std": 3.2,
+    "mean_entropy": 0.5266170655714282
+  },
+  "flymind_unplastic": {
+    "timing_std": 19.226251993742903,
+    "mean_entropy": 0.43603171667823615
+  }
+}

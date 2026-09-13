@@ -1,0 +1,14 @@
+{
+  "gap_above": {
+    "mean_flap_prob": 0.9999501561922789,
+    "mean_motor_score": 9.906566442456196
+  },
+  "gap_aligned": {
+    "mean_flap_prob": 0.0758581879140296,
+    "mean_motor_score": -2.499999887412736
+  },
+  "gap_below": {
+    "mean_flap_prob": 4.53978687024344e-05,
+    "mean_motor_score": -12.255585417727387
+  }
+}

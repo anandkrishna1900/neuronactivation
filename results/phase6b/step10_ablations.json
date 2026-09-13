@@ -1,0 +1,27 @@
+{
+  "A_no_plasticity": {
+    "mean_score": 0.18,
+    "max_score": 2,
+    "mean_survival": 159.04
+  },
+  "B_pathway_plasticity": {
+    "mean_score": 0.2,
+    "max_score": 2,
+    "mean_survival": 158.01
+  },
+  "C_random": {
+    "mean_score": 0.0,
+    "max_score": 0,
+    "mean_survival": 14.49
+  },
+  "D_fixed": {
+    "mean_score": 0.0,
+    "max_score": 0,
+    "mean_survival": 42.0
+  },
+  "E_hand_designed": {
+    "mean_score": 2.32,
+    "max_score": 3,
+    "mean_survival": 428.47
+  }
+}

@@ -54,3 +54,11 @@ coverage.xml
 data/raw/*
 !data/raw/.gitkeep
 !data/README.md
+
+# Environment variables & credentials
+.env
+.env.*
+*.token
+credentials.json
+.credentials.json
+

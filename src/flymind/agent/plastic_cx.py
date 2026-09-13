@@ -64,10 +64,12 @@ class PlasticCXAgent(BaseAgent):
         ]
         n_out = len(self.peg_indices)
         m1, m2 = n_out // 3, 2 * n_out // 3
+        
+        # Correctly aligned: Index 0 -> Action 1 (FORWARD), Index 1 -> Action 2 (TURN_LEFT), Index 2 -> Action 3 (TURN_RIGHT)
         self.motor_sectors = [
-            self.peg_indices[m1:m2],      # Forward (0 -> action 1)
-            self.peg_indices[:m1],        # Turn Left (1 -> action 2)
-            self.peg_indices[m2:],        # Turn Right (2 -> action 3)
+            self.peg_indices[:m1],        # Forward population (index 0 -> +1 = 1: FORWARD)
+            self.peg_indices[m1:m2],      # Turn Left population (index 1 -> +1 = 2: TURN_LEFT)
+            self.peg_indices[m2:],        # Turn Right population (index 2 -> +1 = 3: TURN_RIGHT)
         ]
 
         # 3. Setup anatomical plasticity mask (only existing non-zero connections may adapt)

@@ -1,0 +1,79 @@
+{
+  "physics": {
+    "gravity": -0.25,
+    "flap_impulse": 4.5,
+    "horizontal_speed": 1.5,
+    "gap_size": 160.0,
+    "pipe_spacing": 200.0,
+    "bird_x": 80.0,
+    "bird_radius": 8.0,
+    "pipe_width": 48.0,
+    "world_height": 400.0,
+    "max_steps": 2000
+  },
+  "results": {
+    "random_50pct": {
+      "mean_score": 0.0,
+      "median_score": 0.0,
+      "max_score": 0,
+      "std_score": 0.0,
+      "mean_survival": 14.48
+    },
+    "random_30pct": {
+      "mean_score": 0.0,
+      "median_score": 0.0,
+      "max_score": 0,
+      "std_score": 0.0,
+      "mean_survival": 20.73
+    },
+    "fixed_period_8": {
+      "mean_score": 0.0,
+      "median_score": 0.0,
+      "max_score": 0,
+      "std_score": 0.0,
+      "mean_survival": 42.0
+    },
+    "fixed_period_6": {
+      "mean_score": 0.0,
+      "median_score": 0.0,
+      "max_score": 0,
+      "std_score": 0.0,
+      "mean_survival": 32.0
+    },
+    "fixed_period_10": {
+      "mean_score": 0.0,
+      "median_score": 0.0,
+      "max_score": 0,
+      "std_score": 0.0,
+      "mean_survival": 55.0
+    },
+    "hand_designed": {
+      "mean_score": 2.3666666666666667,
+      "median_score": 3.0,
+      "max_score": 3,
+      "std_score": 0.9516068282413465,
+      "mean_survival": 426.1166666666667
+    },
+    "hand_designed_0": {
+      "mean_score": 2.8866666666666667,
+      "median_score": 3.0,
+      "max_score": 3,
+      "std_score": 0.3836085968217547,
+      "mean_survival": 491.9866666666667
+    },
+    "never_flap": {
+      "mean_score": 0.0,
+      "median_score": 0.0,
+      "max_score": 0,
+      "std_score": 0.0,
+      "mean_survival": 39.0
+    },
+    "always_flap": {
+      "mean_score": 0.0,
+      "median_score": 0.0,
+      "max_score": 0,
+      "std_score": 0.0,
+      "mean_survival": 10.0
+    }
+  }
+}

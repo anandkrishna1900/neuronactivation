@@ -1,0 +1,23 @@
+{
+  "random": {
+    "timing_std": 1.383161474044189,
+    "timing_mean": 1.6373779637377963,
+    "trajectory_var": 56.924694677769395,
+    "mean_entropy": 0.9508957890593359,
+    "std_entropy": 0.07159870639179292
+  },
+  "fixed_period": {
+    "timing_std": 3.2,
+    "timing_mean": 6.4,
+    "trajectory_var": 59.21332146619508,
+    "mean_entropy": 0.5266170655714282,
+    "std_entropy": 1.1102230246251565e-16
+  },
+  "flymind_unplastic": {
+    "timing_std": 12.947257745796703,
+    "timing_mean": 16.860960144927535,
+    "trajectory_var": 13.296000483423068,
+    "mean_entropy": 0.3001582949842371,
+    "std_entropy": 0.010161026329668392
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "mean_score": 1.99,
+  "median_score": 3.0,
+  "max_score": 3,
+  "std_score": 1.3453252394867197,
+  "mean_survival": 417.065,
+  "mean_flap_freq": 0.053155469291008096,
+  "mean_entropy": 0.2995847809531622
+}

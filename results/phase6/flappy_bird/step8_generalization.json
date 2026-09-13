@@ -1,0 +1,58 @@
+{
+  "train_config": {
+    "mean_score": 0.36,
+    "median_score": 0.0,
+    "max_score": 3,
+    "std_score": 0.6406246951218788,
+    "mean_survival": 139.87,
+    "mean_flap_rate": 0.05458072662320813
+  },
+  "large_gap": {
+    "mean_score": 2.0,
+    "median_score": 3.0,
+    "max_score": 3,
+    "std_score": 1.3190905958272918,
+    "mean_survival": 259.43,
+    "mean_flap_rate": 0.05186739372372526
+  },
+  "small_gap": {
+    "mean_score": 0.21,
+    "median_score": 0.0,
+    "max_score": 2,
+    "std_score": 0.5156549233741495,
+    "mean_survival": 125.71,
+    "mean_flap_rate": 0.055101883070684525
+  },
+  "fast_scroll": {
+    "mean_score": 0.5,
+    "median_score": 0.0,
+    "max_score": 3,
+    "std_score": 0.8544003745317531,
+    "mean_survival": 106.22,
+    "mean_flap_rate": 0.05348488144930392
+  },
+  "slow_scroll": {
+    "mean_score": 0.34,
+    "median_score": 0.0,
+    "max_score": 2,
+    "std_score": 0.5868560300448484,
+    "mean_survival": 228.92,
+    "mean_flap_rate": 0.05522650946878497
+  },
+  "high_start": {
+    "mean_score": 0.39,
+    "median_score": 0.0,
+    "max_score": 2,
+    "std_score": 0.661740130262628,
+    "mean_survival": 141.15,
+    "mean_flap_rate": 0.054204764964874676
+  },
+  "low_start": {
+    "mean_score": 0.41,
+    "median_score": 0.0,
+    "max_score": 2,
+    "std_score": 0.6495382975621993,
+    "mean_survival": 142.82,
+    "mean_flap_rate": 0.05474163268502297
+  }
+}

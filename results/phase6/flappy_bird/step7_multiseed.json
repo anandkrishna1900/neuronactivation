@@ -1,0 +1,31 @@
+{
+  "n_seeds": 5,
+  "n_episodes": 300,
+  "mean_of_means": 2.0300000000000002,
+  "std_of_means": 0.09591663046625448,
+  "ci_95_low": 1.9459253664890535,
+  "ci_95_high": 2.114074633510947,
+  "mean_of_maxes": 3.0,
+  "per_seed": {
+    "1000": {
+      "mean_score": 1.91,
+      "max_score": 3
+    },
+    "1100": {
+      "mean_score": 1.92,
+      "max_score": 3
+    },
+    "1200": {
+      "mean_score": 2.14,
+      "max_score": 3
+    },
+    "1300": {
+      "mean_score": 2.08,
+      "max_score": 3
+    },
+    "1400": {
+      "mean_score": 2.1,
+      "max_score": 3
+    }
+  }
+}

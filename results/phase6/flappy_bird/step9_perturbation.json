@@ -1,0 +1,27 @@
+{
+  "baseline": {
+    "mean_score": 2.01,
+    "max_score": 3,
+    "mean_survival": 417.04
+  },
+  "gap_shift_up": {
+    "mean_score": 1.71,
+    "max_score": 3,
+    "mean_survival": 384.06
+  },
+  "gap_shift_down": {
+    "mean_score": 1.9,
+    "max_score": 3,
+    "mean_survival": 404.87
+  },
+  "speed_change": {
+    "mean_score": 2.08,
+    "max_score": 3,
+    "mean_survival": 176.21
+  },
+  "gap_narrow": {
+    "mean_score": 0.22,
+    "max_score": 2,
+    "mean_survival": 79.93
+  }
+}

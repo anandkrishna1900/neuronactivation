@@ -1,0 +1,38 @@
+{
+  "A_real_no_plasticity": {
+    "mean_score": 1.98,
+    "median_score": 3.0,
+    "max_score": 3,
+    "mean_survival": 415.9
+  },
+  "B_real_pathway_plasticity": {
+    "mean_score": 1.98,
+    "median_score": 3.0,
+    "max_score": 3,
+    "mean_survival": 415.9
+  },
+  "C_random_controller": {
+    "mean_score": 0.0,
+    "median_score": 0.0,
+    "max_score": 0,
+    "mean_survival": 14.49
+  },
+  "D_fixed_controller": {
+    "mean_score": 0.0,
+    "median_score": 0.0,
+    "max_score": 0,
+    "mean_survival": 42.0
+  },
+  "E_hand_designed": {
+    "mean_score": 2.32,
+    "median_score": 3.0,
+    "max_score": 3,
+    "mean_survival": 428.47
+  },
+  "F_real_global_plasticity": {
+    "mean_score": 1.98,
+    "median_score": 3.0,
+    "max_score": 3,
+    "mean_survival": 415.9
+  }
+}

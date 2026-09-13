@@ -1,0 +1,20 @@
+{
+  "gap_above": {
+    "flap_rate": 1.0,
+    "mean_flap_prob": 0.5093211197373438,
+    "std_flap_prob": 0.0,
+    "mean_asym": 0.003728879904699618
+  },
+  "gap_aligned": {
+    "flap_rate": 1.0,
+    "mean_flap_prob": 0.5252254704192146,
+    "std_flap_prob": 0.0,
+    "mean_asym": 0.010098762108779979
+  },
+  "gap_below": {
+    "flap_rate": 0.0,
+    "mean_flap_prob": 0.4953141927981691,
+    "std_flap_prob": 0.0,
+    "mean_asym": -0.0018743777557737962
+  }
+}

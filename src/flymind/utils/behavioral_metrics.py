@@ -46,7 +46,7 @@ def compute_turning_angle_distribution(headings: List[float]) -> Dict[str, float
     }
 
 
-def compute_behavioral_metrics(episode_records: List[Dict[str, Any]]) -> Dict[str, float]:
+def compute_behavioral_metrics(episode_records: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Aggregates multi-trial behavioral variability metrics."""
     trajectories = [np.array(r["trajectory"]) for r in episode_records if "trajectory" in r]
     all_actions = [a for r in episode_records for a in r.get("actions", [])]
@@ -55,10 +55,23 @@ def compute_behavioral_metrics(episode_records: List[Dict[str, Any]]) -> Dict[st
     ent = compute_action_entropy(all_actions)
     succ = np.mean([r.get("success", 0) for r in episode_records]) * 100
     steps = np.mean([r.get("steps", 0) for r in episode_records])
+
+    total_acts = len(all_actions) if all_actions else 1
+    action_counts = {1: 0, 2: 0, 3: 0}
+    for a in all_actions:
+        if a in action_counts:
+            action_counts[a] += 1
+
+    action_dist = {
+        "FORWARD": action_counts[1] / total_acts,
+        "TURN_LEFT": action_counts[2] / total_acts,
+        "TURN_RIGHT": action_counts[3] / total_acts,
+    }
     
     return {
         "trajectory_diversity": div,
         "action_entropy": ent,
         "success_rate": succ,
         "mean_steps": steps,
+        "action_distribution": action_dist,
     }

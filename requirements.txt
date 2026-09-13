@@ -1,0 +1,17 @@
+# FlyMind: Core Scientific & Machine Learning Dependencies
+numpy>=2.0.0
+pandas>=2.2.0
+scipy>=1.13.0
+networkx>=3.3.0
+matplotlib>=3.8.0
+
+# Connectome Access (neuPrint client)
+neuprint-python>=0.6.3
+requests>=2.31.0
+
+# Serialization & Sparse Formats
+pyarrow>=15.0.0
+
+# Testing & Quality
+pytest>=8.0.0
+pytest-cov>=5.0.0

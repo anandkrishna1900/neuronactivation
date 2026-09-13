@@ -61,4 +61,5 @@ data/raw/*
 *.token
 credentials.json
 .credentials.json
+~$*.docx
 

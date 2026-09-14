@@ -1,0 +1,4 @@
+episode,seed,score,steps,total_reward,mean_score_50,mean_survival_50,eval_mean_score,eval_mean_survival,eval_success_rate,curriculum_stage,wall_time_s
+1,43,0,14,-0.987,0.0,14.0,,,,0,0.0
+2,44,0,17,-0.984,0.0,15.5,0.0,12.75,0.0,0,0.2
+3,45,0,20,-0.981,0.0,17.0,,,,0,0.2

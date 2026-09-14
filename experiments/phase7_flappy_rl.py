@@ -543,16 +543,20 @@ def train(args) -> None:
 
     t0 = time.time()
 
-    for ep in range(1, args.episodes + 1):
-        ep_seed = TRAIN_SEED_OFFSET + args.seed + ep
-        env_kwargs = curriculum.get_env_kwargs(ep)
-        env = FlappyEnvironment(seed=ep_seed, max_steps=args.max_steps, **env_kwargs)
+    import itertools
+    ep_iter = range(1, args.episodes + 1) if args.episodes > 0 else itertools.count(1)
 
-        # Save replay at checkpoint intervals
-        save_rep = (ep % args.checkpoint_interval == 0)
-        rep_path = str(REPLAY_DIR / f"{run_name}_ep{ep:06d}.npz") if save_rep else None
+    try:
+        for ep in ep_iter:
+            ep_seed = TRAIN_SEED_OFFSET + args.seed + ep
+            env_kwargs = curriculum.get_env_kwargs(ep)
+            env = FlappyEnvironment(seed=ep_seed, max_steps=args.max_steps, **env_kwargs)
 
-        result = run_episode(
+            # Save replay at checkpoint intervals
+            save_rep = (ep % args.checkpoint_interval == 0)
+            rep_path = str(REPLAY_DIR / f"{run_name}_ep{ep:06d}.npz") if save_rep else None
+
+            result = run_episode(
             agent, env, shaper, seed=ep_seed,
             max_steps=args.max_steps,
             training=(args.mode not in ("hand", "random", "fixed")),
@@ -637,8 +641,10 @@ def train(args) -> None:
         }
         writer.writerow(row)
         log_f.flush()
-
-    log_f.close()
+    except KeyboardInterrupt:
+        print("\n[Stopped by user via Ctrl+C] Preserving progress...")
+    finally:
+        log_f.close()
 
     # Final evaluation
     print(f"\n{'='*70}")

@@ -377,110 +377,121 @@ class VisualRLEngine:
         self.best_survival     = 0
         self.episode_count     = 0
         self.paused            = False
+        self.running           = True
 
     def run(self) -> None:
         """Main training/rendering loop."""
         run_start = time.time()
 
-        for ep in range(1, self.max_episodes + 1):
-            self.episode_count = ep
-            ep_seed = self.seed + ep
+        ep = 0
+        try:
+            while self.running:
+                ep += 1
+                if self.max_episodes > 0 and ep > self.max_episodes:
+                    break
+                self.episode_count = ep
+                ep_seed = self.seed + ep
 
-            env_kwargs = self.curriculum.get_env_kwargs(ep)
-            env = FlappyEnvironment(seed=ep_seed, max_steps=self.max_steps, **env_kwargs)
-            state = env.reset(seed=ep_seed)
-            self.agent.reset()
+                env_kwargs = self.curriculum.get_env_kwargs(ep)
+                env = FlappyEnvironment(seed=ep_seed, max_steps=self.max_steps, **env_kwargs)
+                state = env.reset(seed=ep_seed)
+                self.agent.reset()
 
-            if self.compare_agent:
-                compare_env = FlappyEnvironment(seed=ep_seed, max_steps=self.max_steps, **env_kwargs)
-                compare_state = compare_env.reset(seed=ep_seed)
-                self.compare_agent.reset()
-                compare_score = 0
+                if self.compare_agent:
+                    compare_env = FlappyEnvironment(seed=ep_seed, max_steps=self.max_steps, **env_kwargs)
+                    compare_state = compare_env.reset(seed=ep_seed)
+                    self.compare_agent.reset()
+                    compare_score = 0
 
-            total_reward = 0.0
-            step_count   = 0
-            done         = False
-            diag: Dict[str, Any] = {}
+                total_reward = 0.0
+                step_count   = 0
+                done         = False
+                diag: Dict[str, Any] = {}
 
-            while not done and step_count < self.max_steps:
-                # Handle events
-                if PYGAME_OK and not self.headless:
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            self._cleanup()
-                            return
-                        if event.type == pygame.KEYDOWN:
-                            if event.key == pygame.K_ESCAPE:
+                while not done and step_count < self.max_steps:
+                    # Handle events
+                    if PYGAME_OK and not self.headless:
+                        for event in pygame.event.get():
+                            if event.type == pygame.QUIT:
+                                self.running = False
                                 self._cleanup()
                                 return
-                            if event.key == pygame.K_SPACE:
+                            if event.key == pygame.K_ESCAPE if event.type == pygame.KEYDOWN else False:
+                                self.running = False
+                                self._cleanup()
+                                return
+                            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                                 self.paused = not self.paused
-                            if event.key == pygame.K_r:
+                            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                                 done = True  # restart episode
 
-                if self.paused and not self.headless:
-                    pygame.time.wait(50)
-                    continue
+                    if self.paused and not self.headless:
+                        pygame.time.wait(50)
+                        continue
 
-                # Run sim_steps_per_frame simulation steps
-                for _ in range(self.sim_steps_per_frame):
-                    if done:
-                        break
-                    action = self.agent.act(state)
-                    diag = self.agent.get_diagnostics()   # read-only — passivity preserved
-                    next_state, env_reward, done, info = env.step(action)
-                    shaped_r = self.shaper.shape(env_reward, info, done)
-                    total_reward += shaped_r
-                    if self.training:
-                        self.agent.apply_step_reward(shaped_r)
-                    self.reward_strip.append(shaped_r)
-                    self.action_strip.append(action)
-                    state = next_state
-                    step_count += 1
+                    # Run sim_steps_per_frame simulation steps
+                    for _ in range(self.sim_steps_per_frame):
+                        if done:
+                            break
+                        action = self.agent.act(state)
+                        diag = self.agent.get_diagnostics()   # read-only — passivity preserved
+                        next_state, env_reward, done, info = env.step(action)
+                        shaped_r = self.shaper.shape(env_reward, info, done)
+                        total_reward += shaped_r
+                        if self.training:
+                            self.agent.apply_step_reward(shaped_r)
+                        self.reward_strip.append(shaped_r)
+                        self.action_strip.append(action)
+                        state = next_state
+                        step_count += 1
 
-                # Compare agent step
-                if self.compare_agent and not done:
-                    c_action = self.compare_agent.act(compare_state)
-                    compare_state, _, c_done, _ = compare_env.step(c_action)
-                    compare_score = compare_state.score
-                    if c_done:
-                        compare_state = compare_env.reset(seed=ep_seed)
+                    # Compare agent step
+                    if self.compare_agent and not done:
+                        c_action = self.compare_agent.act(compare_state)
+                        compare_state, _, c_done, _ = compare_env.step(c_action)
+                        compare_score = compare_state.score
+                        if c_done:
+                            compare_state = compare_env.reset(seed=ep_seed)
 
-                # Render
-                if PYGAME_OK and not self.headless:
-                    self._render(state, action, diag, ep, step_count, total_reward,
-                                 compare_score if self.compare_agent else None)
-                    if self.fps > 0:
-                        self.clock.tick(self.fps)
+                    # Render
+                    if PYGAME_OK and not self.headless:
+                        self._render(state, action, diag, ep, step_count, total_reward,
+                                     compare_score if self.compare_agent else None)
+                        if self.fps > 0:
+                            self.clock.tick(self.fps)
 
-            # Episode end
-            if self.training:
-                ep_stats = self.agent.end_episode(total_reward)
-            self.curriculum.record_episode(state.score)
+                # Episode end
+                if self.training:
+                    ep_stats = self.agent.end_episode(total_reward)
+                self.curriculum.record_episode(state.score)
 
-            self.score_history.append(state.score)
-            self.survival_history.append(step_count)
-            self.reward_history.append(total_reward)
-            if state.score > self.best_score:
-                self.best_score = state.score
-            if step_count > self.best_survival:
-                self.best_survival = step_count
+                self.score_history.append(state.score)
+                self.survival_history.append(step_count)
+                self.reward_history.append(total_reward)
+                if state.score > self.best_score:
+                    self.best_score = state.score
+                if step_count > self.best_survival:
+                    self.best_survival = step_count
 
-            # Checkpoint
-            if ep % self.checkpoint_interval == 0:
-                ckpt = str(self.checkpoint_dir / f"visual_ep{ep:06d}.npz")
-                self.agent.save_checkpoint(ckpt)
-                n = len(self.score_history)
-                mean50 = float(np.mean(self.score_history[-50:])) if n >= 50 else float(np.mean(self.score_history))
-                print(f"  [ep={ep:>5d}] score={state.score} | mean50={mean50:.2f} | "
-                      f"best={self.best_score} | survival={step_count} | "
-                      f"stage={self.curriculum.stage_name}")
+                # Checkpoint
+                if ep % self.checkpoint_interval == 0:
+                    ckpt = str(self.checkpoint_dir / f"visual_ep{ep:06d}.npz")
+                    self.agent.save_checkpoint(ckpt)
+                    n = len(self.score_history)
+                    mean50 = float(np.mean(self.score_history[-50:])) if n >= 50 else float(np.mean(self.score_history))
+                    print(f"  [ep={ep:>5d}] score={state.score} | mean50={mean50:.2f} | "
+                          f"best={self.best_score} | survival={step_count} | "
+                          f"stage={self.curriculum.stage_name}")
+        except KeyboardInterrupt:
+            print("\n[Stopped by user via Ctrl+C]")
+            self.running = False
 
         self._cleanup()
-        print(f"\nTraining complete: {self.max_episodes} episodes")
-        print(f"  Mean score (all):  {np.mean(self.score_history):.3f}")
-        print(f"  Mean score (last 100): {np.mean(self.score_history[-100:]):.3f}")
-        print(f"  Best score: {self.best_score}")
+        print(f"\nSession finished: {len(self.score_history)} episodes")
+        if self.score_history:
+            print(f"  Mean score (all):  {np.mean(self.score_history):.3f}")
+            print(f"  Mean score (last 100): {np.mean(self.score_history[-100:]):.3f}")
+            print(f"  Best score: {self.best_score}")
 
     def _render(self, state: FlappyState, action: int, diag: Dict,
                 episode: int, step: int, ep_reward: float, compare_score=None):
@@ -654,6 +665,10 @@ class VisualRLEngine:
             self.video_writer.append_data(frame)
 
     def _cleanup(self):
+        if self.training and hasattr(self.agent, "save_checkpoint"):
+            ckpt = str(self.checkpoint_dir / "visual_latest.npz")
+            self.agent.save_checkpoint(ckpt)
+            print(f"\n[Checkpoint] Saved latest checkpoint to: {ckpt}")
         if self.video_writer:
             self.video_writer.close()
             print("[Record] Video saved.")

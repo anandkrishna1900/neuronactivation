@@ -1,0 +1,2 @@
+episode,seed,score,steps,total_reward,mean_score_50,mean_survival_50,eval_mean_score,eval_mean_survival,eval_success_rate,curriculum_stage,wall_time_s
+3,45,3,10000,12.99899999999849,3.0,10000.0,0.65,1213.4,0.35,0,51.4

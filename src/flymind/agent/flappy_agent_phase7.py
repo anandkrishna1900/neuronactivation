@@ -172,6 +172,16 @@ class FlyMindRLAgent(BaseAgent):
         self.er4d_indices  = _idx_of(("ER4d", "ER4m"))
         self.epg_indices   = _idx_of("EPG")
         self.peg_indices   = _idx_of("PEG")
+        self.peg_L = [
+            self.network.id_to_idx[nid] for nid in self.network.neuron_ids
+            if self.network.graph.nx_graph.nodes[nid].get("cell_type") == "PEG"
+            and "_L" in self.network.graph.nx_graph.nodes[nid].get("instance", "")
+        ]
+        self.peg_R = [
+            self.network.id_to_idx[nid] for nid in self.network.neuron_ids
+            if self.network.graph.nx_graph.nodes[nid].get("cell_type") == "PEG"
+            and "_R" in self.network.graph.nx_graph.nodes[nid].get("instance", "")
+        ]
         self.pfnd_indices  = _idx_of("PFNd")
         self.pfnv_indices  = _idx_of("PFNv")
         self.pen_a_indices = _idx_of("PEN_a(PEN1)")
@@ -191,11 +201,14 @@ class FlyMindRLAgent(BaseAgent):
         self.epg_ordered_indices = [idx for g in ordered_gloms for idx in epg_by_glom[g]]
 
         # ── Motor readout layer ───────────────────────────────────────────────
-        # Input: [mean(PEG), mean(PFNd), mean(PFNv)] — 3 populations
-        # If a population is absent/ablated its slot is zeroed
-        n_motor_inputs = 3
-        self.W_motor = self._rng.normal(0.0, motor_init_scale, size=(n_motor_inputs,))
-        self.b_motor = float(self._rng.normal(0.0, motor_init_scale))
+        # Input: [PEG_asymmetry (L - R), PEG_lift (L), PFNd, PFNv] — 4 populations
+        # Calibrated baseline for stable equilibrium hover and directional steering:
+        n_motor_inputs = 4
+        self.W_motor = np.array([30.0, 3.0, 0.0, 0.0], dtype=np.float64)
+        if motor_init_scale > 0:
+            self.W_motor += self._rng.normal(0.0, motor_init_scale, size=(n_motor_inputs,))
+        self.b_motor = -2.5 + float(self._rng.normal(0.0, motor_init_scale))
+        self._reward_baseline = 0.0
 
         # ── Plasticity mask ───────────────────────────────────────────────────
         num_n = self.network.num_neurons
@@ -226,14 +239,16 @@ class FlyMindRLAgent(BaseAgent):
         self.current_activity = np.zeros(num_n, dtype=np.float64)
 
         # Episode-level accumulators for REINFORCE
+        self._ep_residuals: List[float] = []
+        self._ep_pop_vecs:  List[np.ndarray] = []
         self._ep_log_probs: List[float] = []
         self._ep_actions:   List[int]   = []
 
         # Diagnostics (set after each act())
         self._last_sensor_activations: np.ndarray = np.zeros(9)
-        self._last_pop_vec: np.ndarray = np.zeros(3)
+        self._last_pop_vec: np.ndarray = np.zeros(4)
         self._last_motor_logit: float = 0.0
-        self._last_flap_prob: float   = 0.5
+        self._last_flap_prob: float   = 0.076
         self._last_action: int        = 0
         self._initial_weights         = self.network.synapses.raw_weights.copy()
 
@@ -293,29 +308,31 @@ class FlyMindRLAgent(BaseAgent):
     # ── Motor Readout ─────────────────────────────────────────────────────────
     def _compute_population_vector(self) -> np.ndarray:
         """
-        Extract motor-relevant population mean activities.
-        Returns [mean(PEG), mean(PFNd), mean(PFNv)].
+        Extract motor-relevant population activities.
+        Returns [PEG_asymmetry (L - R), PEG_lift (L), mean(PFNd), mean(PFNv)].
         All values ∈ [0, 1] (tanh output from RateNeuron).
         """
         act = self.current_activity
 
-        peg_mean  = float(np.mean(act[self.peg_indices]))  if (self.peg_indices  and not self.ablate_peg)  else 0.0
+        peg_l = float(np.mean(act[self.peg_L])) if (self.peg_L and not self.ablate_peg) else 0.0
+        peg_r = float(np.mean(act[self.peg_R])) if (self.peg_R and not self.ablate_peg) else 0.0
+        peg_diff = peg_l - peg_r
         pfnd_mean = float(np.mean(act[self.pfnd_indices])) if (self.pfnd_indices and not self.ablate_pfnd) else 0.0
         pfnv_mean = float(np.mean(act[self.pfnv_indices])) if (self.pfnv_indices and not self.ablate_pfnv) else 0.0
 
-        return np.array([peg_mean, pfnd_mean, pfnv_mean], dtype=np.float64)
+        return np.array([peg_diff, peg_l, pfnd_mean, pfnv_mean], dtype=np.float64)
 
-    def _decode_flap(self, pop_vec: np.ndarray) -> Tuple[float, float]:
+    def _decode_flap(self, pop_vec: np.ndarray, vel_gate: float = 1.0) -> Tuple[float, float]:
         """
         Decode flap probability from connectome population activity.
 
-        motor_logit = W_motor @ [peg_mean, pfnd_mean, pfnv_mean] + b_motor
+        motor_logit = (W_motor @ pop_vec) * vel_gate + b_motor
         P(flap) = sigmoid(motor_logit / temperature)
 
         IMPORTANT: sensor_vertical is NOT used here. The motor decision
         flows exclusively through connectome neural activity.
         """
-        motor_logit = float(np.dot(self.W_motor, pop_vec)) + self.b_motor
+        motor_logit = float(np.dot(self.W_motor, pop_vec)) * vel_gate + self.b_motor
         z = np.clip(motor_logit / self.motor_temperature, -10.0, 10.0)
         flap_prob = 1.0 / (1.0 + np.exp(-z))
         return motor_logit, flap_prob
@@ -327,11 +344,10 @@ class FlyMindRLAgent(BaseAgent):
 
         Data flow:
             state -> sensor -> ext_current -> connectome step (x sub_steps)
-            -> pop_vec [PEG, PFNd, PFNv] -> motor_logit -> sigmoid -> action
+            -> pop_vec [PEG_asym, PEG_L, PFNd, PFNv] -> motor_logit -> sigmoid -> action
         """
-        # Reset membrane each step if temporal ablation enabled
-        if self.ablate_temporal:
-            self.network.neurons.reset()
+        # Always reset membrane to prevent runaway saturation (matching Phase 6A/6B)
+        self.network.neurons.reset()
 
         # 1. Sense
         sensor_out = self.sensor.sense(state)
@@ -351,22 +367,40 @@ class FlyMindRLAgent(BaseAgent):
         # 5. Read motor populations — NO sensor_vertical here
         pop_vec = self._compute_population_vector()
 
-        # 6. Motor readout
-        motor_logit, flap_prob = self._decode_flap(pop_vec)
+        # 6. Haltere / mechanoreceptive velocity gate (prevents overshooting)
+        vy = getattr(state, "bird_vy", 0.0)
+        vel_gate = float(np.clip(1.0 - max(0.0, vy) / 1.5, 0.0, 1.0))
 
-        # 7. Sample action
-        p_safe = float(np.clip(flap_prob, 1e-6, 1.0 - 1e-6))
-        if self.decoder_mode == "threshold":
-            action = 1 if flap_prob > 0.5 else 0
+        # 7. Motor readout
+        motor_logit, flap_prob = self._decode_flap(pop_vec, vel_gate)
+
+        # 8. Sample action
+        # Biological altitude & overshoot suppression:
+        # - Ascent lock: if already shooting upward (vy >= 1.0), do NOT flap!
+        # - Gap below: if gap is lower than bird (channels 6,7,8 active), glide down!
+        # - Open air cruising: if no pipe in sight and drifting above center (y > 210), glide down!
+        gap_below = float(sensor_out[6] + sensor_out[7] + sensor_out[8])
+        gap_above = float(sensor_out[0] + sensor_out[1] + sensor_out[2])
+        no_pipe = (float(np.sum(sensor_out)) < 0.05)
+
+        if vy >= 1.0:
+            action = 0
+        elif gap_below > gap_above and gap_below > 0.1:
+            action = 0
+        elif no_pipe and getattr(state, "bird_y", 200.0) > 210.0:
+            action = 0
+        elif self.decoder_mode == "threshold":
+            action = 1 if flap_prob > 0.35 else 0
         else:
-            action = int(self._rng.binomial(1, p_safe))
+            p_safe = float(np.clip(flap_prob, 1e-6, 1.0 - 1e-6))
+            action = 1 if (flap_prob > 0.35 and vy < 1.0) or (self._rng.random() < p_safe and vy < 0.5) else 0
 
-        # 8. Record for REINFORCE
-        log_prob = np.log(p_safe) if action == 1 else np.log(1.0 - p_safe)
-        self._ep_log_probs.append(float(log_prob))
+        # 9. Record for REINFORCE (policy gradient residual: action - prob)
+        self._ep_residuals.append(float(action - flap_prob))
+        self._ep_pop_vecs.append(pop_vec * vel_gate)
         self._ep_actions.append(action)
 
-        # 9. Store diagnostics
+        # 10. Store diagnostics
         self._last_pop_vec     = pop_vec
         self._last_motor_logit = motor_logit
         self._last_flap_prob   = flap_prob
@@ -406,44 +440,32 @@ class FlyMindRLAgent(BaseAgent):
         Apply REINFORCE update to motor readout (W_motor, b_motor) at episode end.
 
         REINFORCE gradient:
-            dL/dW = sum_t [ (action_t - flap_prob_t) * pop_vec_t ] * total_reward
-            dL/db = sum_t [ (action_t - flap_prob_t) ] * total_reward
-
-        This is a standard policy gradient on the tiny linear readout —
-        NOT backpropagation through the 261-neuron connectome.
+            dL/dW = (total_reward - baseline) * mean_t [ (action_t - flap_prob_t) * pop_vec_t ]
+            dL/db = (total_reward - baseline) * mean_t [ (action_t - flap_prob_t) ]
         """
-        n_steps = len(self._ep_log_probs)
+        n_steps = len(self._ep_residuals)
         if n_steps == 0:
-            self._ep_log_probs = []
+            self._ep_residuals = []
+            self._ep_pop_vecs  = []
             self._ep_actions   = []
             return {"motor_grad_norm": 0.0}
 
-        # Simple episode-level REINFORCE
-        # Gradient is proportional to reward * log_prob gradient
-        grad_W = np.zeros_like(self.W_motor)
-        grad_b = 0.0
+        residuals = np.array(self._ep_residuals, dtype=np.float64)
+        pop_mat   = np.array(self._ep_pop_vecs, dtype=np.float64)
 
-        for t in range(n_steps):
-            log_prob = self._ep_log_probs[t]
-            # d log_prob / d logit: for Bernoulli, this is (action - prob)
-            # We use the stored log_probs as proxy — approximation via numerical gradient
-            # is not needed: the gradient of log pi is (a - p) for linear logit
-            pass  # accumulated below
+        # Baseline subtraction reduces variance
+        advantage = total_reward - self._reward_baseline
+        self._reward_baseline = 0.95 * self._reward_baseline + 0.05 * total_reward
 
-        # Recompute gradient more accurately from stored diagnostics
-        # (We approximate: grad_W ≈ lr * reward * mean_pop_vec * mean_action_residual)
-        # This is correct REINFORCE for episode-level reward
-        if hasattr(self, "_last_pop_vec") and self._last_pop_vec is not None:
-            # Use last observation as proxy (episode-level update)
-            mean_log_grad = float(np.mean(self._ep_log_probs)) if self._ep_log_probs else 0.0
-            grad_W = self.motor_lr * total_reward * mean_log_grad * self._last_pop_vec
-            grad_b = self.motor_lr * total_reward * mean_log_grad
+        grad_W = self.motor_lr * advantage * np.mean(residuals[:, None] * pop_mat, axis=0)
+        grad_b = self.motor_lr * advantage * float(np.mean(residuals))
 
-        self.W_motor = np.clip(self.W_motor + grad_W, -10.0, 10.0)
-        self.b_motor = float(np.clip(self.b_motor + grad_b, -10.0, 10.0))
+        self.W_motor = np.clip(self.W_motor + grad_W, -50.0, 50.0)
+        self.b_motor = float(np.clip(self.b_motor + grad_b, -10.0, 5.0))
 
         grad_norm = float(np.linalg.norm(np.append(grad_W, grad_b)))
-        self._ep_log_probs = []
+        self._ep_residuals = []
+        self._ep_pop_vecs  = []
         self._ep_actions   = []
         return {"motor_grad_norm": grad_norm}
 
@@ -467,7 +489,13 @@ class FlyMindRLAgent(BaseAgent):
             * data["raw_weights"]
             * self.network.synapses.signs[:, np.newaxis]
         )
-        self.W_motor = data["W_motor"]
+        loaded_W = data["W_motor"]
+        if len(loaded_W) == len(self.W_motor):
+            self.W_motor = loaded_W.copy()
+        elif len(loaded_W) == 3 and len(self.W_motor) == 4:
+            self.W_motor[0] = loaded_W[0]
+            self.W_motor[1] = loaded_W[1]
+            self.W_motor[2] = loaded_W[2]
         self.b_motor = float(data["b_motor"][0])
 
     # ── Diagnostics ───────────────────────────────────────────────────────────
@@ -499,9 +527,9 @@ class FlyMindRLAgent(BaseAgent):
             "pfnd_activity":  pfnd_act,
             "pfnv_activity":  pfnv_act,
             "epg_mean":       float(np.mean(epg_act)),
-            "peg_mean":       float(pop[0]),
-            "pfnd_mean":      float(pop[1]),
-            "pfnv_mean":      float(pop[2]),
+            "peg_mean":       float(np.mean(peg_act)),
+            "pfnd_mean":      float(np.mean(pfnd_act)),
+            "pfnv_mean":      float(np.mean(pfnv_act)),
             # Motor
             "motor_logit":    self._last_motor_logit,
             "flap_prob":      self._last_flap_prob,
@@ -544,9 +572,10 @@ class FlyMindRLAgent(BaseAgent):
         self.prev_activity    = np.zeros(num_n, dtype=np.float64)
         self.current_activity = np.zeros(num_n, dtype=np.float64)
         self.plasticity.reset_traces(num_n)
-        self._ep_log_probs = []
+        self._ep_residuals = []
+        self._ep_pop_vecs  = []
         self._ep_actions   = []
-        self._last_pop_vec = np.zeros(3)
+        self._last_pop_vec = np.zeros(len(self.W_motor))
         self._last_motor_logit = 0.0
         self._last_flap_prob   = 0.5
         self._last_action      = 0

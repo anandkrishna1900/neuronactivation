@@ -114,3 +114,17 @@ The extracted subcircuit comprises the core heading direction network:
 
 #### Figure 10: Synchronized Trajectory and EPG Compass State
 ![Live Embodied Dual Panel](../results/experiments/09_live_embodied_dual_panel.png)
+
+---
+
+### Experiment 6: Phase 6C Visual Gameplay & Replay System
+- **Objective**: Real-time rendering, 16-glomeruli polar EPG compass dashboard, side-by-side comparative viewport, zero-divergence passivity guarantee validation ($\Delta = 0.000000$), compressed replay serialization (`.npz`), and video export (`MP4`/`PNG`).
+- **Demo Benchmark Results**:
+  - Random Baseline: Mean Score = 0.00, Survival = 13.7 steps
+  - Fixed Period Baseline: Mean Score = 0.00, Survival = 42.0 steps
+  - FlyMind Connectome: **Mean Score = 0.33**, **Survival = 121.7 steps**
+  - Hand-Designed Controller: Mean Score = 2.33, Survival = 405.7 steps
+
+#### Figure 11: Phase 6C Gameplay & Telemetry Composite Research Figure
+![Phase 6C Composite Figure](../results/phase6c/figures/phase6c_gameplay_figure.png)
+

@@ -72,3 +72,13 @@ results/
     │   └── neural_bump_tracking.png
     └── summary.txt          # Statistical summary and significance tests
 ```
+
+---
+
+## 6. Phase 6 Flappy Bird Visual & Telemetry Suite
+
+Phase 6 extends the navigation benchmark into a 2D side-scrolling obstacle environment:
+* **Phase 6A**: Initial Flappy Bird environment setup, 9-channel visual sensor, and PEN_a asymmetry motor decoder.
+* **Phase 6B**: Connectome motor readout using PEG premotor gating.
+* **Phase 6C**: Real-time visual gameplay engine, 16-glomeruli polar EPG ring dashboard, side-by-side comparison mode, compressed replay serialization (`.npz`), video export (`MP4`/`PNG`), zero-divergence passivity validation, and composite 6-panel publication figure generation.
+

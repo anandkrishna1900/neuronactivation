@@ -1,0 +1,29 @@
+{
+  "batch_results": {
+    "25": {
+      "eps_per_sec": 0.8025080675492837,
+      "time": 31.15233480000461,
+      "stable": true,
+      "mean_score": 1.84
+    },
+    "50": {
+      "eps_per_sec": 0.7282697078463816,
+      "time": 68.65588320000097,
+      "stable": true,
+      "mean_score": 2.08
+    },
+    "75": {
+      "eps_per_sec": 0.8990704302237735,
+      "time": 83.41949359999853,
+      "stable": true,
+      "mean_score": 2.1066666666666665
+    },
+    "100": {
+      "eps_per_sec": 0.951419757465168,
+      "time": 105.10607879998861,
+      "stable": true,
+      "mean_score": 2.14
+    }
+  },
+  "best_batch": 100
+}

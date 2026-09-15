@@ -471,18 +471,21 @@ class FlyMindRLAgent(BaseAgent):
 
     # ── Checkpoint I/O ────────────────────────────────────────────────────────
     def save_checkpoint(self, path: str) -> None:
-        """Save connectome weights + motor readout to .npz checkpoint."""
+        """Save full agent state to .npz checkpoint."""
+        rng_state = self._rng.bit_generator.state
         np.savez_compressed(
             path,
             raw_weights=self.network.synapses.raw_weights,
             W_motor=self.W_motor,
             b_motor=np.array([self.b_motor]),
             plasticity_mask=self.plasticity_mask,
+            reward_baseline=np.array([self._reward_baseline]),
+            rng_state=np.array([rng_state], dtype=object),
         )
 
     def load_checkpoint(self, path: str) -> None:
-        """Load connectome weights + motor readout from .npz checkpoint."""
-        data = np.load(path)
+        """Load full agent state from .npz checkpoint."""
+        data = np.load(path, allow_pickle=True)
         self.network.synapses.raw_weights = data["raw_weights"]
         self.network.synapses.effective_weights = (
             self.network.synapses.scale
@@ -497,6 +500,13 @@ class FlyMindRLAgent(BaseAgent):
             self.W_motor[1] = loaded_W[1]
             self.W_motor[2] = loaded_W[2]
         self.b_motor = float(data["b_motor"][0])
+        if "reward_baseline" in data:
+            self._reward_baseline = float(data["reward_baseline"][0])
+        if "rng_state" in data:
+            try:
+                self._rng.bit_generator.state = data["rng_state"].item()
+            except Exception:
+                pass
 
     # ── Diagnostics ───────────────────────────────────────────────────────────
     def get_diagnostics(self) -> Dict[str, Any]:

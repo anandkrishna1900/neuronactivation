@@ -1,0 +1,95 @@
+{
+  "cpu_serial": {
+    "mean_time": 0.15531525000027613,
+    "eps_per_sec": 6.438517788808389,
+    "eps_per_hour": 23178.664039710202,
+    "total_time": 7.765762500013807
+  },
+  "cpu_par_2": {
+    "workers": 2,
+    "total_time": 1.2226612999947974,
+    "eps_per_sec": 0.0,
+    "eps_per_hour": 0.0
+  },
+  "cpu_par_4": {
+    "workers": 4,
+    "total_time": 2.3467958999972325,
+    "eps_per_sec": 0.0,
+    "eps_per_hour": 0.0
+  },
+  "cpu_par_6": {
+    "workers": 6,
+    "total_time": 3.552751299997908,
+    "eps_per_sec": 0.0,
+    "eps_per_hour": 0.0
+  },
+  "cpu_par_8": {
+    "workers": 8,
+    "total_time": 5.660354999999981,
+    "eps_per_sec": 0.0,
+    "eps_per_hour": 0.0
+  },
+  "gpu_batch_1": {
+    "batch_size": 1,
+    "total_time": 74.12904970001546,
+    "eps_per_sec": 0.6744994061348337,
+    "eps_per_hour": 2428.1978620854015,
+    "vram_mb": 8.805376
+  },
+  "gpu_batch_2": {
+    "batch_size": 2,
+    "total_time": 44.507926799939014,
+    "eps_per_sec": 1.1233953948191653,
+    "eps_per_hour": 4044.223421348995,
+    "vram_mb": 8.813568
+  },
+  "gpu_batch_5": {
+    "batch_size": 5,
+    "total_time": 17.23759110001265,
+    "eps_per_sec": 2.9006373170067428,
+    "eps_per_hour": 10442.294341224275,
+    "vram_mb": 8.838144
+  },
+  "gpu_batch_10": {
+    "batch_size": 10,
+    "total_time": 11.451905499998247,
+    "eps_per_sec": 4.366085626536794,
+    "eps_per_hour": 15717.908255532458,
+    "vram_mb": 8.879104
+  },
+  "gpu_batch_20": {
+    "batch_size": 20,
+    "total_time": 9.27707179999561,
+    "eps_per_sec": 5.389631672358476,
+    "eps_per_hour": 19402.674020490515,
+    "vram_mb": 9.194496
+  },
+  "gpu_batch_25": {
+    "batch_size": 25,
+    "total_time": 6.89873409998836,
+    "eps_per_sec": 7.247706503151696,
+    "eps_per_hour": 26091.743411346106,
+    "vram_mb": 9.001984
+  },
+  "gpu_batch_50": {
+    "batch_size": 50,
+    "total_time": 4.462520699991728,
+    "eps_per_sec": 11.204429819248274,
+    "eps_per_hour": 40335.94734929378,
+    "vram_mb": 9.21088
+  },
+  "gpu_batch_75": {
+    "batch_size": 75,
+    "total_time": 4.6630750999902375,
+    "eps_per_sec": 10.722538009328796,
+    "eps_per_hour": 38601.13683358367,
+    "vram_mb": 9.21088
+  },
+  "gpu_batch_100": {
+    "batch_size": 100,
+    "total_time": 4.835297900004662,
+    "eps_per_sec": 10.34062451456234,
+    "eps_per_hour": 37226.24825242442,
+    "vram_mb": 9.21088
+  }
+}

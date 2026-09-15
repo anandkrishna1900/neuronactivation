@@ -69,13 +69,25 @@ class RewardModulatedHebbian(PlasticityRule):
         post_activity: np.ndarray,
         reward: float = 0.0,
     ) -> np.ndarray:
-        """Apply dopamine/reward modulation strictly masked to designated plastic edges."""
+        """Apply dopamine/reward modulation strictly masked to designated plastic edges.
+
+        Uses soft-bound plasticity (BCM-style): update magnitude scales with
+        (1 - W/W_max), so weights approaching the ceiling naturally stop being
+        modified.  This prevents monotonic drift while preserving all other
+        biological properties of the 3-factor rule.
+        """
         self.step_eligibility(pre_activity, post_activity)
 
         if abs(reward) < 1e-7:
             return raw_weights
 
         dW = self.learning_rate * reward * self.eligibility_trace
+
+        # Soft-bound: as W -> W_max, the update shrinks to zero.
+        # Biologically analogous to synaptic saturation / BCM-style bounds.
+        if self.weight_max > 0:
+            soft_bound = np.clip(1.0 - raw_weights / self.weight_max, 0.0, 1.0)
+            dW = dW * soft_bound
 
         # Enforce anatomical pathway mask: non-mask connections strictly receive 0 update
         if self.plasticity_mask is not None:

@@ -149,3 +149,57 @@ python experiments/phase7_flappy_rl.py --ablation rewired --episodes 1000
 # Run full automated ablation suite
 python experiments/phase7_flappy_rl.py --run-ablations --episodes 500
 ```
+
+---
+
+## 6. Test Execution Report
+
+**Date**: 2026-09-14  
+**Environment**: Windows (Python 3.14.6, pytest 9.1.1)
+
+### 6.1 Phase 7 Quick Validation (`experiments/phase7_validate_quick.py`)
+
+| Metric | Result |
+|--------|--------|
+| Imports | OK |
+| Agent creation | OK |
+| Neuron counts | PEG: 18, EPG: 46, PFNd: 40, PFNv: 20 |
+| Motor weights | `[30.00, 2.99, 0.0075, 0.0094]` |
+| Plastic synapses | 1,888 / 19,969 |
+| Biological integrity assertions | PASSED |
+| 10-step simulation | PASSED |
+| Flap probability | 0.157 |
+| PEG mean activity | 0.0890 |
+| PFNd mean activity | 0.0235 |
+| Motor gradient norm | 0.000435 |
+
+### 6.2 Full Pytest Suite (19/19 Passed)
+
+| Test File | Test Name | Status |
+|-----------|-----------|--------|
+| `test_connectome.py` | `test_connectome_graph_construction` | PASSED |
+| `test_connectome.py` | `test_connectome_validation_catches_invalid_weights` | PASSED |
+| `test_cx_circuit.py` | `test_cx_graph_loads` | PASSED |
+| `test_cx_circuit.py` | `test_cx_graph_validation` | PASSED |
+| `test_cx_circuit.py` | `test_cx_neuron_types_present` | PASSED |
+| `test_cx_circuit.py` | `test_cx_epg_neurotransmitter` | PASSED |
+| `test_cx_circuit.py` | `test_cx_delta7_neurotransmitter` | PASSED |
+| `test_cx_circuit.py` | `test_cx_epg_pen_connections_exist` | PASSED |
+| `test_cx_circuit.py` | `test_cx_no_nan_weights` | PASSED |
+| `test_imports.py` | `test_package_metadata` | PASSED |
+| `test_imports.py` | `test_core_classes_exist` | PASSED |
+| `test_phase2.py` | `test_randomized_arena_initialization` | PASSED |
+| `test_phase2.py` | `test_sensory_encoding_no_privileged_coords` | PASSED |
+| `test_phase2.py` | `test_reward_regimes` | PASSED |
+| `test_phase2.py` | `test_plasticity_eligibility_and_mask` | PASSED |
+| `test_phase2.py` | `test_agent_freeze_weights` | PASSED |
+| `test_simulation.py` | `test_neural_network_step` | PASSED |
+| `test_simulation.py` | `test_arena_environment_and_sensor` | PASSED |
+| `test_simulation.py` | `test_random_agent_trial` | PASSED |
+
+### 6.3 Summary
+
+- **Phase 7 quick validation**: All biological integrity assertions passed.
+- **Full test suite**: 19/19 passed (1.09s runtime).
+- **Errors encountered**: None.
+- **Fixes required**: None.

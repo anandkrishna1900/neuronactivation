@@ -1,0 +1,143 @@
+
+======================================================================
+PHASE 7 FLYMIND RL — flymind_none_s46_20260914_104307
+Mode: flymind | Ablation: none | Episodes: 500
+======================================================================
+Agent: FlyMindRLAgent
+Reward: FlappyRewardShaper(pipe=1.0, survival=0.001, collision=-1.0)
+Curriculum: disabled
+  ep=     1 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=17s
+  ep=     2 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=31s
+  ep=     3 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=44s
+  ep=     4 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=57s
+  ep=     5 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=71s
+  ep=     6 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=90s
+  ep=     7 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=110s
+  ep=     8 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=124s
+  ep=     9 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=137s
+  ep=    10 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=150s
+  ep=    15 | score=41 | steps=10000 | reward=+50.999 | mean50=41.00 | stage=- | t=231s
+  ep=    20 | score=41 | steps=10000 | reward=+50.999 | mean50=39.20 | stage=- | t=293s
+  ep=    25 | score=41 | steps=10000 | reward=+50.999 | mean50=38.08 | stage=- | t=354s
+  ep=    30 | score=41 | steps=10000 | reward=+50.999 | mean50=38.13 | stage=- | t=416s
+  ep=    35 | score=36 | steps=8917 | reward=+43.916 | mean50=38.40 | stage=- | t=483s
+  ep=    40 | score=29 | steps=7253 | reward=+35.252 | mean50=38.42 | stage=- | t=543s
+  ep=    45 | score=41 | steps=10000 | reward=+50.999 | mean50=37.24 | stage=- | t=587s
+  ep=    50 | score=41 | steps=10000 | reward=+50.999 | mean50=37.58 | stage=- | t=649s
+  ep=    55 | score=9 | steps=2446 | reward=+10.445 | mean50=36.22 | stage=- | t=692s
+  ep=    60 | score=41 | steps=10000 | reward=+50.999 | mean50=36.04 | stage=- | t=750s
+  ep=    65 | score=41 | steps=10000 | reward=+50.999 | mean50=36.04 | stage=- | t=810s
+  ep=    70 | score=41 | steps=10000 | reward=+50.999 | mean50=35.94 | stage=- | t=860s
+  ep=    75 | score=41 | steps=10000 | reward=+50.999 | mean50=36.68 | stage=- | t=920s
+  ep=    80 | score=41 | steps=10000 | reward=+50.999 | mean50=36.94 | stage=- | t=981s
+  ep=    85 | score=15 | steps=3923 | reward=+17.922 | mean50=36.52 | stage=- | t=1033s
+  ep=    90 | score=41 | steps=10000 | reward=+50.999 | mean50=36.76 | stage=- | t=1094s
+  ep=    95 | score=41 | steps=10000 | reward=+50.999 | mean50=37.16 | stage=- | t=1140s
+  [Eval ep=  100] mean_score=1.050 success_rate=55.0% mean_survival=329 wall=1208s
+  ep=   100 | score=41 | steps=10000 | reward=+50.999 | mean50=36.78 | stage=- | t=1208s
+  ep=   105 | score=41 | steps=10000 | reward=+50.999 | mean50=37.84 | stage=- | t=1262s
+  ep=   110 | score=41 | steps=10000 | reward=+50.999 | mean50=38.02 | stage=- | t=1318s
+  ep=   115 | score=41 | steps=10000 | reward=+50.999 | mean50=38.02 | stage=- | t=1378s
+  ep=   120 | score=41 | steps=10000 | reward=+50.999 | mean50=37.78 | stage=- | t=1430s
+  ep=   125 | score=41 | steps=10000 | reward=+50.999 | mean50=37.28 | stage=- | t=1489s
+  ep=   130 | score=41 | steps=10000 | reward=+50.999 | mean50=37.28 | stage=- | t=1553s
+  ep=   135 | score=41 | steps=10000 | reward=+50.999 | mean50=36.30 | stage=- | t=1595s
+  ep=   140 | score=41 | steps=10000 | reward=+50.999 | mean50=36.02 | stage=- | t=1651s
+  ep=   145 | score=41 | steps=10000 | reward=+50.999 | mean50=36.42 | stage=- | t=1701s
+  ep=   150 | score=8 | steps=2209 | reward=+9.208 | mean50=34.82 | stage=- | t=1732s
+  ep=   155 | score=41 | steps=10000 | reward=+50.999 | mean50=34.36 | stage=- | t=1781s
+  ep=   160 | score=41 | steps=10000 | reward=+50.999 | mean50=33.70 | stage=- | t=1833s
+  ep=   165 | score=41 | steps=10000 | reward=+50.999 | mean50=32.58 | stage=- | t=1878s
+  ep=   170 | score=41 | steps=10000 | reward=+50.999 | mean50=33.64 | stage=- | t=1938s
+  ep=   175 | score=38 | steps=9412 | reward=+46.411 | mean50=33.44 | stage=- | t=1988s
+  ep=   180 | score=41 | steps=10000 | reward=+50.999 | mean50=33.26 | stage=- | t=2044s
+  ep=   185 | score=41 | steps=10000 | reward=+50.999 | mean50=34.10 | stage=- | t=2095s
+  ep=   190 | score=41 | steps=10000 | reward=+50.999 | mean50=34.38 | stage=- | t=2154s
+  ep=   195 | score=6 | steps=1727 | reward=+6.726 | mean50=32.58 | stage=- | t=2181s
+  [Eval ep=  200] mean_score=1.700 success_rate=50.0% mean_survival=408 wall=2237s
+  ep=   200 | score=32 | steps=7954 | reward=+38.953 | mean50=33.38 | stage=- | t=2237s
+  ep=   205 | score=34 | steps=8458 | reward=+41.457 | mean50=31.96 | stage=- | t=2267s
+  ep=   210 | score=41 | steps=10000 | reward=+50.999 | mean50=31.12 | stage=- | t=2306s
+  ep=   215 | score=40 | steps=9899 | reward=+48.898 | mean50=30.96 | stage=- | t=2348s
+  ep=   220 | score=41 | steps=10000 | reward=+50.999 | mean50=29.64 | stage=- | t=2389s
+  ep=   225 | score=41 | steps=10000 | reward=+50.999 | mean50=29.56 | stage=- | t=2437s
+  ep=   230 | score=5 | steps=1506 | reward=+5.505 | mean50=27.04 | stage=- | t=2459s
+  ep=   235 | score=20 | steps=5088 | reward=+24.087 | mean50=24.72 | stage=- | t=2477s
+  ep=   240 | score=16 | steps=4152 | reward=+19.151 | mean50=22.76 | stage=- | t=2509s
+  ep=   245 | score=5 | steps=1521 | reward=+5.520 | mean50=21.62 | stage=- | t=2521s
+  ep=   250 | score=3 | steps=1038 | reward=+3.037 | mean50=19.08 | stage=- | t=2528s
+  ep=   255 | score=11 | steps=2731 | reward=+12.730 | mean50=18.26 | stage=- | t=2545s
+  ep=   260 | score=24 | steps=6061 | reward=+29.060 | mean50=16.80 | stage=- | t=2564s
+  ep=   265 | score=0 | steps=269 | reward=-0.732 | mean50=14.72 | stage=- | t=2577s
+  ep=   270 | score=1 | steps=556 | reward=+0.555 | mean50=12.44 | stage=- | t=2586s
+  ep=   275 | score=11 | steps=2946 | reward=+12.945 | mean50=9.82 | stage=- | t=2598s
+  ep=   280 | score=4 | steps=1229 | reward=+4.228 | mean50=9.50 | stage=- | t=2616s
+  ep=   285 | score=3 | steps=1020 | reward=+3.019 | mean50=8.86 | stage=- | t=2625s
+  ep=   290 | score=36 | steps=8955 | reward=+43.954 | mean50=7.92 | stage=- | t=2645s
+  ep=   295 | score=12 | steps=3161 | reward=+14.160 | mean50=8.06 | stage=- | t=2658s
+  [Eval ep=  300] mean_score=1.700 success_rate=50.0% mean_survival=408 wall=2679s
+  ep=   300 | score=3 | steps=1020 | reward=+3.019 | mean50=8.56 | stage=- | t=2679s
+  ep=   305 | score=8 | steps=2205 | reward=+9.204 | mean50=7.90 | stage=- | t=2688s
+  ep=   310 | score=41 | steps=10000 | reward=+50.999 | mean50=8.74 | stage=- | t=2718s
+  ep=   315 | score=29 | steps=7231 | reward=+35.230 | mean50=9.38 | stage=- | t=2739s
+  ep=   320 | score=3 | steps=809 | reward=+2.808 | mean50=10.08 | stage=- | t=2758s
+  ep=   325 | score=9 | steps=2440 | reward=+10.439 | mean50=10.28 | stage=- | t=2774s
+  ep=   330 | score=9 | steps=2461 | reward=+10.460 | mean50=10.72 | stage=- | t=2797s
+  ep=   335 | score=8 | steps=2208 | reward=+9.207 | mean50=10.74 | stage=- | t=2806s
+  ep=   340 | score=18 | steps=4409 | reward=+21.408 | mean50=10.38 | stage=- | t=2820s
+  ep=   345 | score=7 | steps=1949 | reward=+7.948 | mean50=10.44 | stage=- | t=2835s
+  ep=   350 | score=11 | steps=2933 | reward=+12.932 | mean50=10.62 | stage=- | t=2852s
+  ep=   355 | score=2 | steps=804 | reward=+1.803 | mean50=11.66 | stage=- | t=2875s
+  ep=   360 | score=11 | steps=2932 | reward=+12.931 | mean50=10.36 | stage=- | t=2887s
+  ep=   365 | score=0 | steps=269 | reward=-0.732 | mean50=9.34 | stage=- | t=2894s
+  ep=   370 | score=4 | steps=1234 | reward=+4.233 | mean50=8.94 | stage=- | t=2908s
+  ep=   375 | score=0 | steps=269 | reward=-0.732 | mean50=9.56 | stage=- | t=2931s
+  ep=   380 | score=3 | steps=1000 | reward=+2.999 | mean50=9.02 | stage=- | t=2947s
+  ep=   385 | score=27 | steps=6798 | reward=+32.797 | mean50=9.26 | stage=- | t=2959s
+  ep=   390 | score=8 | steps=2190 | reward=+9.189 | mean50=9.74 | stage=- | t=2980s
+  ep=   395 | score=0 | steps=269 | reward=-0.732 | mean50=10.42 | stage=- | t=3004s
+  [Eval ep=  400] mean_score=1.700 success_rate=50.0% mean_survival=408 wall=3034s
+  ep=   400 | score=20 | steps=5088 | reward=+24.087 | mean50=10.50 | stage=- | t=3034s
+  ep=   405 | score=1 | steps=550 | reward=+0.549 | mean50=9.64 | stage=- | t=3045s
+  ep=   410 | score=5 | steps=1523 | reward=+5.522 | mean50=9.46 | stage=- | t=3053s
+  ep=   415 | score=38 | steps=9441 | reward=+46.440 | mean50=11.08 | stage=- | t=3077s
+  ep=   420 | score=0 | steps=269 | reward=-0.732 | mean50=10.76 | stage=- | t=3084s
+  ep=   425 | score=15 | steps=3879 | reward=+17.878 | mean50=11.02 | stage=- | t=3106s
+  ep=   430 | score=0 | steps=301 | reward=-0.700 | mean50=10.50 | stage=- | t=3113s
+  ep=   435 | score=5 | steps=1485 | reward=+5.484 | mean50=10.62 | stage=- | t=3124s
+  ep=   440 | score=9 | steps=2440 | reward=+10.439 | mean50=10.10 | stage=- | t=3134s
+  ep=   445 | score=4 | steps=1254 | reward=+4.253 | mean50=10.24 | stage=- | t=3154s
+  ep=   450 | score=24 | steps=6029 | reward=+29.028 | mean50=10.86 | stage=- | t=3175s
+  ep=   455 | score=15 | steps=3879 | reward=+17.878 | mean50=11.76 | stage=- | t=3194s
+  ep=   460 | score=20 | steps=5121 | reward=+24.120 | mean50=12.82 | stage=- | t=3213s
+  ep=   465 | score=7 | steps=1949 | reward=+7.948 | mean50=11.92 | stage=- | t=3226s
+  ep=   470 | score=19 | steps=4834 | reward=+22.833 | mean50=12.22 | stage=- | t=3236s
+  ep=   475 | score=7 | steps=1978 | reward=+7.977 | mean50=11.92 | stage=- | t=3254s
+  ep=   480 | score=2 | steps=749 | reward=+1.748 | mean50=12.70 | stage=- | t=3270s
+  ep=   485 | score=4 | steps=1251 | reward=+4.250 | mean50=13.06 | stage=- | t=3287s
+  ep=   490 | score=12 | steps=3177 | reward=+14.176 | mean50=13.14 | stage=- | t=3298s
+  ep=   495 | score=20 | steps=5085 | reward=+24.084 | mean50=12.94 | stage=- | t=3313s
+  [Eval ep=  500] mean_score=1.700 success_rate=50.0% mean_survival=408 wall=3334s
+  ep=   500 | score=21 | steps=5341 | reward=+25.340 | mean50=12.58 | stage=- | t=3334s
+
+======================================================================
+FINAL EVALUATION (validation seeds)
+  eval_mean_score: 1.68
+  eval_median_score: 1.0
+  eval_std_score: 2.0341091416145796
+  eval_max_score: 7.0
+  eval_min_score: 0.0
+  eval_mean_survival: 406.72
+  eval_mean_reward: 1.0857199999999971
+  eval_success_rate: 0.6
+  eval_n_seeds: 50
+[Saved] Final checkpoint: C:\Users\anand\OneDrive\Desktop\Projects\Fly stuff\results\phase7\checkpoints\flymind_none_s46_20260914_104307_final.npz
+[Saved] Summary: C:\Users\anand\OneDrive\Desktop\Projects\Fly stuff\results\phase7\metrics\flymind_none_s46_20260914_104307_summary.json
+[Saved] Training log: C:\Users\anand\OneDrive\Desktop\Projects\Fly stuff\results\phase7\metrics\flymind_none_s46_20260914_104307_training.csv
+
+Final results:
+  Train mean score (last 50): 12.580
+  Val mean score (50 seeds):  1.680
+  Val success rate:           60.0%
+  Best score achieved:        41
+======================================================================

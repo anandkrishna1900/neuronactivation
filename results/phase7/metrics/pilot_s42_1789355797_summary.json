@@ -1,0 +1,27 @@
+{
+  "seed": 42,
+  "episodes": 500,
+  "max_steps": 50000,
+  "run_name": "pilot_s42_1789355797",
+  "train_mean_score": 1.066,
+  "train_mean_survival": 6453.9,
+  "train_max_score": 3,
+  "best_score": 3,
+  "final_eval": {
+    "eval_mean_score": 0.74,
+    "eval_median_score": 0.5,
+    "eval_std_score": 0.8901685233707153,
+    "eval_max_score": 3.0,
+    "eval_min_score": 0.0,
+    "eval_mean_survival": 2261.6,
+    "eval_mean_reward": 2.04059999999869,
+    "eval_success_rate": 0.5,
+    "eval_n_seeds": 50
+  },
+  "wall_time_s": 2033.8914132118225,
+  "n_plastic_synapses": 1888,
+  "delta_weight_mean": 17.69423283350334,
+  "delta_weight_std": 2.96649189365115,
+  "weight_mean": 33.94317351146944,
+  "weight_std": 17.79721963501028
+}

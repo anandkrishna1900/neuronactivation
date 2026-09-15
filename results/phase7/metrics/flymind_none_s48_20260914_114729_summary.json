@@ -1,0 +1,32 @@
+{
+  "run_name": "flymind_none_s48_20260914_114729",
+  "mode": "flymind",
+  "ablation": "none",
+  "seed": 48,
+  "episodes": 500,
+  "training_episodes": 500,
+  "train_mean_score": 21.308,
+  "train_median_score": 17.5,
+  "train_std_score": 15.965874106982053,
+  "train_max_score": 41,
+  "best_score": 41,
+  "best_checkpoint": "C:\\Users\\anand\\OneDrive\\Desktop\\Projects\\Fly stuff\\results\\phase7\\checkpoints\\flymind_none_s48_20260914_114729_best.npz",
+  "final_checkpoint": "C:\\Users\\anand\\OneDrive\\Desktop\\Projects\\Fly stuff\\results\\phase7\\checkpoints\\flymind_none_s48_20260914_114729_final.npz",
+  "final_eval": {
+    "eval_mean_score": 1.68,
+    "eval_median_score": 1.0,
+    "eval_std_score": 2.0341091416145796,
+    "eval_max_score": 7.0,
+    "eval_min_score": 0.0,
+    "eval_mean_survival": 406.72,
+    "eval_mean_reward": 1.0857199999999971,
+    "eval_success_rate": 0.6,
+    "eval_n_seeds": 50
+  },
+  "curriculum_enabled": false,
+  "reward_config": {
+    "pipe_reward": 1.0,
+    "survival_reward": 0.001,
+    "collision_penalty": -1.0
+  }
+}

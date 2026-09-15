@@ -483,12 +483,42 @@ def evaluate(
 
 
 # ── Training Loop ─────────────────────────────────────────────────────────────
+def _save_train_state(path: str, **kwargs) -> None:
+    """Save training state dict to .npz."""
+    np.savez_compressed(path, **{k: np.array(v) for k, v in kwargs.items()})
+
+
+def _load_train_state(path: str) -> dict:
+    """Load training state dict from .npz."""
+    data = np.load(path, allow_pickle=True)
+    return {k: data[k].item() if data[k].ndim == 0 else data[k] for k in data.files}
+
+
 def train(args) -> None:
-    """Main training loop."""
+    """Main training loop with full pause/resume support."""
     run_name = (
         f"{args.mode}_{args.ablation}_s{args.seed}_"
         f"{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
     )
+
+    # If resuming, derive run_name from the checkpoint path
+    start_episode = 1
+    if args.resume:
+        resume_path = Path(args.resume)
+        # Extract run_name from checkpoint filename: <run_name>_ep<N>.npz or <run_name>_final.npz
+        stem = resume_path.stem
+        for suffix in ["_best", "_final"]:
+            if stem.endswith(suffix):
+                run_name = stem[: -len(suffix)]
+                break
+        else:
+            # Try to find the training state file
+            state_path = resume_path.parent / f"{stem}_train_state.npz"
+            if state_path.exists():
+                run_name = stem.replace("_ep", "_").rsplit("_", 1)[0]
+            else:
+                run_name = stem
+
     print(f"\n{'='*70}")
     print(f"PHASE 7 FLYMIND RL — {run_name}")
     print(f"Mode: {args.mode} | Ablation: {args.ablation} | Episodes: {args.episodes}")
@@ -511,16 +541,35 @@ def train(args) -> None:
     agent = make_agent(args.mode, args.seed, args.ablation, args)
 
     # Resume from checkpoint
+    best_score = 0
+    best_ckpt_path = None
     if args.resume:
         print(f"[Resume] Loading checkpoint: {args.resume}")
         agent.load_checkpoint(args.resume)
+        # Load training state
+        state_path = str(Path(args.resume).with_suffix("").as_posix()) + "_train_state.npz"
+        if Path(state_path).exists():
+            ts = _load_train_state(state_path)
+            start_episode = int(ts.get("episode", 0)) + 1
+            best_score = int(ts.get("best_score", 0))
+            best_ckpt_path = ts.get("best_ckpt_path", "")
+            if isinstance(best_ckpt_path, np.ndarray):
+                best_ckpt_path = str(best_ckpt_path)
+            # Restore score history for moving averages
+            saved_scores = ts.get("all_scores", np.array([]))
+            saved_survivals = ts.get("all_survivals", np.array([]))
+            saved_rewards = ts.get("all_rewards", np.array([]))
+            print(f"[Resume] Resuming from episode {start_episode}, best_score={best_score}")
+        else:
+            print(f"[Resume] No training state found at {state_path}, starting fresh from loaded weights")
 
     agent_name = getattr(agent, "name", type(agent).__name__)
     print(f"Agent: {agent_name}")
     print(f"Reward: {shaper}")
     print(f"Curriculum: {'enabled' if args.curriculum else 'disabled'}")
+    print(f"Starting episode: {start_episode}")
 
-    # Metrics log
+    # Metrics log — append if resuming
     log_path = METRICS_DIR / f"{run_name}_training.csv"
     csv_fields = [
         "episode", "seed", "score", "steps", "total_reward",
@@ -528,9 +577,11 @@ def train(args) -> None:
         "eval_mean_score", "eval_mean_survival", "eval_success_rate",
         "curriculum_stage", "wall_time_s",
     ]
-    log_f = open(log_path, "w", newline="")
+    write_header = not log_path.exists() or start_episode == 1
+    log_f = open(log_path, "a" if not write_header else "w", newline="")
     writer = csv.DictWriter(log_f, fieldnames=csv_fields)
-    writer.writeheader()
+    if write_header:
+        writer.writeheader()
 
     # Score tracking
     score_deque    = deque(maxlen=50)
@@ -538,13 +589,46 @@ def train(args) -> None:
     all_scores     = []
     all_survivals  = []
     all_rewards    = []
-    best_score     = 0
-    best_ckpt_path = None
+    if args.resume:
+        try:
+            state_path = str(Path(args.resume).with_suffix("").as_posix()) + "_train_state.npz"
+            if Path(state_path).exists():
+                ts = _load_train_state(state_path)
+                all_scores = list(ts.get("all_scores", []))
+                all_survivals = list(ts.get("all_survivals", []))
+                all_rewards = list(ts.get("all_rewards", []))
+        except Exception:
+            pass
+    # Rebuild deques from saved history
+    for s in all_scores[-50:]:
+        score_deque.append(s)
+    for s in all_survivals[-50:]:
+        survival_deque.append(s)
 
     t0 = time.time()
 
     import itertools
-    ep_iter = range(1, args.episodes + 1) if args.episodes > 0 else itertools.count(1)
+    ep_iter = range(start_episode, args.episodes + 1) if args.episodes > 0 else itertools.count(start_episode)
+
+    # Save a helper checkpoint immediately on resume so user always has a restart point
+    def _save_everything(ckpt_tag: str, ep: int):
+        nonlocal best_ckpt_path
+        ckpt_path = str(CKPT_DIR / f"{run_name}_{ckpt_tag}.npz")
+        agent.save_checkpoint(ckpt_path)
+        # Save training state
+        state = {
+            "episode":       ep,
+            "seed":          args.seed,
+            "best_score":    best_score,
+            "best_ckpt_path": best_ckpt_path or "",
+            "all_scores":    np.array(all_scores[-2000:]),  # keep last 2000 for resume
+            "all_survivals": np.array(all_survivals[-2000:]),
+            "all_rewards":   np.array(all_rewards[-2000:]),
+            "run_name":      run_name,
+        }
+        state_path = str(CKPT_DIR / f"{run_name}_{ckpt_tag}_train_state.npz")
+        _save_train_state(state_path, **state)
+        return ckpt_path
 
     try:
         for ep in ep_iter:
@@ -557,93 +641,106 @@ def train(args) -> None:
             rep_path = str(REPLAY_DIR / f"{run_name}_ep{ep:06d}.npz") if save_rep else None
 
             result = run_episode(
-            agent, env, shaper, seed=ep_seed,
-            max_steps=args.max_steps,
-            training=(args.mode not in ("hand", "random", "fixed")),
-            save_replay=save_rep,
-            replay_path=rep_path,
-        )
-
-        score    = result["score"]
-        steps    = result["steps"]
-        ep_reward = result["total_reward"]
-
-        score_deque.append(score)
-        survival_deque.append(steps)
-        all_scores.append(score)
-        all_survivals.append(steps)
-        all_rewards.append(ep_reward)
-
-        # Curriculum progression
-        stage_advanced = curriculum.record_episode(score)
-        if stage_advanced:
-            print(f"  [Curriculum] Advanced to: {curriculum.stage_name}")
-
-        mean_s50  = float(np.mean(score_deque))
-        mean_sv50 = float(np.mean(survival_deque))
-
-        # Best model checkpoint
-        if score > best_score:
-            best_score = score
-            best_ckpt_path = str(CKPT_DIR / f"{run_name}_best.npz")
-            if hasattr(agent, "save_checkpoint"):
-                agent.save_checkpoint(best_ckpt_path)
-
-        # Periodic checkpoint
-        eval_stats = {}
-        if ep % args.checkpoint_interval == 0:
-            ckpt_path = str(CKPT_DIR / f"{run_name}_ep{ep:06d}.npz")
-            if hasattr(agent, "save_checkpoint"):
-                agent.save_checkpoint(ckpt_path)
-
-            # Validation evaluation
-            eval_stats = evaluate(
-                agent, n_seeds=args.eval_seeds,
-                seed_offset=VALID_SEED_OFFSET,
+                agent, env, shaper, seed=ep_seed,
                 max_steps=args.max_steps,
-                shaper=shaper,
+                training=(args.mode not in ("hand", "random", "fixed")),
+                save_replay=save_rep,
+                replay_path=rep_path,
             )
 
-            wall_t = time.time() - t0
-            print(
-                f"  [Eval ep={ep:>5d}] "
-                f"mean_score={eval_stats['eval_mean_score']:.3f} "
-                f"success_rate={eval_stats['eval_success_rate']:.1%} "
-                f"mean_survival={eval_stats['eval_mean_survival']:.0f} "
-                f"wall={wall_t:.0f}s"
-            )
+            score    = result["score"]
+            steps    = result["steps"]
+            ep_reward = result["total_reward"]
 
-        # Progress print
-        if ep % max(1, args.episodes // 100) == 0 or ep <= 10:
-            wall_t = time.time() - t0
-            print(
-                f"  ep={ep:>6d} | score={score} | steps={steps} | "
-                f"reward={ep_reward:+.3f} | "
-                f"mean50={mean_s50:.2f} | "
-                f"stage={curriculum.stage_name if args.curriculum else '-'} | "
-                f"t={wall_t:.0f}s"
-            )
+            score_deque.append(score)
+            survival_deque.append(steps)
+            all_scores.append(score)
+            all_survivals.append(steps)
+            all_rewards.append(ep_reward)
 
-        # CSV log
-        row = {
-            "episode":           ep,
-            "seed":              ep_seed,
-            "score":             score,
-            "steps":             steps,
-            "total_reward":      ep_reward,
-            "mean_score_50":     mean_s50,
-            "mean_survival_50":  mean_sv50,
-            "eval_mean_score":   eval_stats.get("eval_mean_score", ""),
-            "eval_mean_survival": eval_stats.get("eval_mean_survival", ""),
-            "eval_success_rate": eval_stats.get("eval_success_rate", ""),
-            "curriculum_stage":  curriculum.current_stage_idx,
-            "wall_time_s":       f"{time.time() - t0:.1f}",
-        }
-        writer.writerow(row)
-        log_f.flush()
+            # Curriculum progression
+            stage_advanced = curriculum.record_episode(score)
+            if stage_advanced:
+                print(f"  [Curriculum] Advanced to: {curriculum.stage_name}")
+
+            mean_s50  = float(np.mean(score_deque))
+            mean_sv50 = float(np.mean(survival_deque))
+
+            # Best model checkpoint
+            if score > best_score:
+                best_score = score
+                best_ckpt_path = str(CKPT_DIR / f"{run_name}_best.npz")
+                agent.save_checkpoint(best_ckpt_path)
+                _save_train_state(
+                    str(CKPT_DIR / f"{run_name}_best_train_state.npz"),
+                    episode=ep, seed=args.seed, best_score=best_score,
+                    best_ckpt_path=best_ckpt_path,
+                    all_scores=np.array(all_scores[-2000:]),
+                    all_survivals=np.array(all_survivals[-2000:]),
+                    all_rewards=np.array(all_rewards[-2000:]),
+                    run_name=run_name,
+                )
+
+            # Periodic checkpoint (also saves full state for resume)
+            eval_stats = {}
+            if ep % args.checkpoint_interval == 0:
+                ckpt_path = _save_everything(f"ep{ep:06d}", ep)
+
+                # Validation evaluation
+                eval_stats = evaluate(
+                    agent, n_seeds=args.eval_seeds,
+                    seed_offset=VALID_SEED_OFFSET,
+                    max_steps=args.max_steps,
+                    shaper=shaper,
+                )
+
+                wall_t = time.time() - t0
+                print(
+                    f"  [Eval ep={ep:>5d}] "
+                    f"mean_score={eval_stats['eval_mean_score']:.3f} "
+                    f"success_rate={eval_stats['eval_success_rate']:.1%} "
+                    f"mean_survival={eval_stats['eval_mean_survival']:.0f} "
+                    f"wall={wall_t:.0f}s"
+                )
+
+            # Progress print
+            if ep % max(1, args.episodes // 100) == 0 or ep <= 10:
+                wall_t = time.time() - t0
+                print(
+                    f"  ep={ep:>6d} | score={score} | steps={steps} | "
+                    f"reward={ep_reward:+.3f} | "
+                    f"mean50={mean_s50:.2f} | "
+                    f"best={best_score} | "
+                    f"stage={curriculum.stage_name if args.curriculum else '-'} | "
+                    f"t={wall_t:.0f}s"
+                )
+
+            # CSV log
+            row = {
+                "episode":           ep,
+                "seed":              ep_seed,
+                "score":             score,
+                "steps":             steps,
+                "total_reward":      ep_reward,
+                "mean_score_50":     mean_s50,
+                "mean_survival_50":  mean_sv50,
+                "eval_mean_score":   eval_stats.get("eval_mean_score", ""),
+                "eval_mean_survival": eval_stats.get("eval_mean_survival", ""),
+                "eval_success_rate": eval_stats.get("eval_success_rate", ""),
+                "curriculum_stage":  curriculum.current_stage_idx,
+                "wall_time_s":       f"{time.time() - t0:.1f}",
+            }
+            writer.writerow(row)
+            log_f.flush()
     except KeyboardInterrupt:
-        print("\n[Stopped by user via Ctrl+C] Preserving progress...")
+        print("\n[Ctrl+C] Saving progress before exit...")
     finally:
+        # Always save latest checkpoint on exit (normal, error, or Ctrl+C)
+        try:
+            _save_everything("latest", ep if 'ep' in dir() else start_episode)
+            print(f"[Saved] Latest checkpoint for resume.")
+        except Exception:
+            pass
         log_f.close()
 
     # Final evaluation

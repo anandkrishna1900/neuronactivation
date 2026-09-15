@@ -166,13 +166,16 @@ class FlappyEnvironment:
         for pipe in self.pipes:
             pipe["x"] -= self.horizontal_speed
 
+        # Scroll the next-pipe anchor so it stays in the same world-frame
+        self._next_pipe_x -= self.horizontal_speed
+
         # Remove pipes that have scrolled past the bird
         while self.pipes and self.pipes[0]["x"] + self.pipe_width / 2.0 < self.bird_x - 30.0:
             self.pipes.pop(0)
 
         # Generate new pipes ahead
         lo, hi = self._gap_center_range()
-        while self._next_pipe_x - self.horizontal_speed < self.bird_x + self.world_width + 200.0:
+        while self._next_pipe_x < self.bird_x + self.world_width + 200.0:
             gap_center = float(self.rng.uniform(lo, hi))
             self.pipes.append({"x": self._next_pipe_x, "gap_center": gap_center})
             self._next_pipe_x += self.pipe_spacing
